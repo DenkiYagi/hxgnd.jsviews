@@ -14,9 +14,9 @@ extern class JsViews {
         @:overload(function (namedConverters: JsObject<Dynamic -> Dynamic>, ?parentTemplate: String): Void{})
         function converters(name: String, fn: Dynamic -> Dynamic): Dynamic;
 
-        @:overload(function (name: String, tagOptions: TagOptions): Void{})
-        @:overload(function (namedTags: {}, ?parentTemplate: String): Void{})
-        function tags(name: String, fn: Dynamic -> String): Void;
+        @:overload(function (name: String, tagOptions: TagOptions): Tag{})
+        @:overload(function (namedTags: {}, ?parentTemplate: String): Tag{})
+        function tags(name: String, fn: Dynamic -> String): Tag;
 
         @:overload(function (namedHelpers: {}, ?parentTemplate: String): Void{})
         function helpers(name: String, fn: Dynamic -> Dynamic): Void;
@@ -30,9 +30,12 @@ extern class JsViews {
         return untyped __js__("$.templates.apply")(null, (markupOrSelector == null) ? [name] : [name, markupOrSelector]);
     }
 
-    static inline function getTemplate(name: String): Option<Template> {
-        var t = untyped __js__("$.templates")[name];
-        return (t != null) ? Some(t) : None;
+    static inline function getTemplate(name: String): Null<Template> {
+        return untyped __js__("$.templates")[name];
+    }
+
+    static inline function getTag(name: String): Null<Tag> {
+        return  untyped __js__("$.views.tags")[name];
     }
 
     @:overload(function (flag: Bool, to: Element, from: {}, ?context: {}): Void{})
@@ -63,7 +66,11 @@ extern class JsViews {
     static function unobserve(array: Array<Dynamic>, myHandler: ObservableEvent -> ObservableEventArgs -> Void): Void;
 }
 
+typedef Tag = {
+}
+
 typedef TagOptions = {
+    ?baseTag: Tag,
     ?render: Dynamic -> String,
     ?template: String,
     ?dataBoundOnly: Bool,
@@ -121,6 +128,7 @@ abstract TagDef(Dynamic) {
     public var parentElem(get, never): Element;
     public var tagCtx(get, never): TagCtx;
     public var tagName(get, never): String;
+    public var baseTag(get, never): Null<Tag>;
     public var template(get, set): Null<Template>;
 
     public inline function contents(selector: String): JqHtml {
@@ -151,6 +159,7 @@ abstract TagDef(Dynamic) {
     inline function get_parentElem(): Element return this.parentElem;
     inline function get_tagCtx(): TagCtx return this.tagCtx;
     inline function get_tagName(): String return this.tagName;
+    inline function get_baseTag(): String return this.baseTag;
     inline function get_template(): Null<Template> return this.template;
     inline function set_template(x): Null<Template> return this.template = x;
 }

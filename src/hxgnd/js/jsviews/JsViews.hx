@@ -207,6 +207,7 @@ typedef Observable = {
 }
 
 typedef ObservableEvent = {
+    var type(default, never): String;
     var target(default, never): Dynamic; // Object or Array<Dynamic>
     var data(default, never): Dynamic<Dynamic>; // JsViews metadata
 }
